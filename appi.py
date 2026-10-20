@@ -45,7 +45,7 @@ TABELA_PRECOS_INTERNOS = {
     "v_cordao": 5.00
 }
 
-st.title('🪟 Orçamentos Mauá by Almir Jr v29')
+st.title(' Orçamentos Mauá by Almir Jr v29')
 st.caption('Sistema de Orçamentos Conectado em Nuvem')
 
 aba_calculadora, aba_historico = st.tabs(['🧮 Novo Orçamento', '🗄️ Histórico Salvo'])
