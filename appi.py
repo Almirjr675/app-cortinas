@@ -147,9 +147,6 @@ with aba_calculadora:
             cod_ponteira_g = st.text_input('Código Ponteira (G):', value='PTG-01', disabled=not is_varao)
             v_ponteira_g = st.number_input('Valor Unitário Ponteira (G) (R$):', min_value=0.0, value=25.0, step=1.0, disabled=not is_varao)
 
-        v_suporte = st.number_input('Valor Unitário Suporte (R$):', min_value=0.0, value=12.0, step=1.0, disabled=not is_varao) 
-        key='v_suporte_input'
-
         st.markdown('---')
         st.subheader('📝 Observações do Pedido')
         obs_pedido = st.text_area('Informações adicionais:', placeholder='Ex: Cliente vai retirar na loja, conferir estampa...', height=80)
