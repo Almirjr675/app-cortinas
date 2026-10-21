@@ -3,6 +3,59 @@ import json
 import os
 import math
 import streamlit as st
+# ==========================================================
+# 🔐 CONFIGURAÇÕES E GERENCIAMENTO DE USUÁRIOS
+# ==========================================================
+USUARIOS_PERMITIDOS = {
+    "maua": "mauamaua",
+    "vendedor1": "senha456",
+    "admin": "admin2026"
+}
+
+def verificar_login(usuario, senha):
+    if usuario in USUARIOS_PERMITIDOS and USUARIOS_PERMITIDOS[usuario] == senha:
+        return True
+    return False
+
+def renderizar_tela_login():
+    st.markdown(
+        """
+        <style>
+        .login-box {
+            padding: 2rem; border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); margin-top: 5%;
+        }
+        </style>
+        """, 
+        unsafe_allow_html=True
+    )
+    _, col2, _ = st.columns([1, 2, 1])
+    with col2:
+        st.markdown('<div class="login-box">', unsafe_allow_html=True)
+        st.title(' Login Mauá Tecidos')
+        st.subheader('🔒 Controle de Acesso')
+        usuario_input = st.text_input('Usuário:', placeholder='Digite seu usuário...')
+        senha_input = st.text_input('Senha:', type='password', placeholder='Digite sua senha...')
+        if st.button('Entrar', type='primary', use_container_width=True):
+            if verificar_login(usuario_input.lower().strip(), senha_input):
+                st.session_state['conectado'] = True
+                st.session_state['usuario_atual'] = usuario_input.lower().strip()
+                st.success('Acesso liberado!')
+                st.rerun()
+            else:
+                st.error('Usuário ou senha incorretos. Tente novamente.')
+        st.markdown('</div>', unsafe_allow_html=True)
+# Configuração obrigatória do Streamlit
+st.set_page_config(page_title='Orçamentos Cortinas', page_icon='🪟', layout='wide')
+
+# Verificação de segurança (Bloqueio)
+if 'conectado' not in st.session_state:
+    st.session_state['conectado'] = False
+
+if not st.session_state['conectado']:
+    renderizar_tela_login()
+    st.stop()  # Trava o código aqui caso não esteja logado
+
 
 # 1. FUNÇÃO DE PRAZO
 def calcular_prazo_entrega(data_inicial, dias_uteis=20):
@@ -36,7 +89,7 @@ def salvar_dados_nuvem(novo_registro):
 
 # TABELA DE PREÇOS DOS AVIAMENTOS INTERNOS DE CONFECÇÃO (Fixos de Fábrica)
 TABELA_PRECOS_INTERNOS = {
-    "v_entretela": 6.50,        
+    "v_entretela": 1.80,        
     "v_argola": 4.50,           
     "v_gancho": 0.80,           
     "v_terminal": 2.50,         
@@ -44,9 +97,17 @@ TABELA_PRECOS_INTERNOS = {
     "v_limitador": 3.00,        
     "v_cordao": 5.00
 }
+# Menu Lateral para dar Logout
+with st.sidebar:
+    st.write(f"👤 Conectado como: **{st.session_state['usuario_atual'].capitalize()}**")
+    if st.button("Sair / Logout", type="secondary", use_container_width=True):
+        st.session_state['conectado'] = False
+        st.session_state['usuario_atual'] = None
+        st.rerun()
+# ... DAQUI PARA BAIXO SEGUE O RESTANTE DO SEU CÓDIGO ORIGINAL (Abas, col_dados, cálculos, etc)
 
-st.title(' Orçamentos Mauá by Almir Jr v29')
-st.caption('Sistema de Orçamentos Conectado em Nuvem')
+st.title('Orçamentos Mauá Tecidos by Almir Jr v29')
+st.caption('Sistema de Orçamentos para Cortinas')
 
 aba_calculadora, aba_historico = st.tabs(['🧮 Novo Orçamento', '🗄️ Histórico Salvo'])
 
@@ -146,7 +207,6 @@ with aba_calculadora:
             st.write("")
             cod_ponteira_g = st.text_input('Código Ponteira (G):', value='PTG-01', disabled=not is_varao)
             v_ponteira_g = st.number_input('Valor Unitário Ponteira (G) (R$):', min_value=0.0, value=25.0, step=1.0, disabled=not is_varao)
-
         st.markdown('---')
         st.subheader('📝 Observações do Pedido')
         obs_pedido = st.text_area('Informações adicionais:', placeholder='Ex: Cliente vai retirar na loja, conferir estampa...', height=80)
