@@ -20,7 +20,7 @@ import io
 # 🔐 CONFIGURAÇÕES E GERENCIAMENTO DE USUÁRIOS
 # ==========================================================
 USUARIOS_PERMITIDOS = {
-    "maua": "mauamaua",
+    "mauatecidos": "mauamaua",
     "vendedor1": "senha456",
     "admin": "admin2026"
 }
