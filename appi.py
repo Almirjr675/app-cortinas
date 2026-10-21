@@ -116,9 +116,10 @@ def gerar_pdf_orcamento(dados_pdf):
     # 5. 🆕 FORMAS DE PAGAMENTO (Adicionado aqui)
     story.append(Paragraph("💳 Formas de Pagamento Aceitas", style_secao))
     formas_pagamento_html = """
-    • <b>À Vista / PIX:</b> 5% de desconto sobre o valor total do pedido.<br/>
-    • <b>Cartão de Crédito:</b> Em até 6x sem juros.<br/>
-    • <b>Sinal:</b> 50% de entrada no ato do pedido + 50% antes da instalação.
+    • <b>À Vista / PIX:</b> 5% de desconto sobre o valor total do pedido__<br/>
+    • <b>Cartão de Débito:</b>__<br/>
+    • <b>Cartão de Crédito:</b> Em até 6x sem juros__<br/>
+    • <b>Sinal:</b> 50% de entrada no ato do pedido + 50% antes da instalação__
     """
     story.append(Paragraph(formas_pagamento_html, style_texto))
     
@@ -196,10 +197,10 @@ def salvar_dados_nuvem(novo_registro):
 # TABELA DE PREÇOS DOS AVIAMENTOS INTERNOS DE CONFECÇÃO (Fixos de Fábrica)
 TABELA_PRECOS_INTERNOS = {
     "v_entretela": 1.80,        
-    "v_argola": 4.50,           
-    "v_gancho": 0.80,           
-    "v_terminal": 2.50,         
-    "v_rodizio": 0.60,          
+    "v_argola": 0.50,           
+    "v_gancho": 0.10,           
+    "v_terminal": 0.80,         
+    "v_rodizio": 0.25,          
     "v_limitador": 3.00,        
     "v_cordao": 5.00
 }
