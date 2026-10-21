@@ -233,8 +233,8 @@ with aba_calculadora:
 
         c4, c5, c6 = st.columns(3)
         with c4: ambiente = st.text_input('Ambiente:', placeholder='Ex: Sala de Estar')
-        with c5: largura = st.number_input('Largura do Trilho/Varão (m):', min_value=0.1, value=2.0, step=0.1)
-        with c6: altura = st.number_input('Altura da Janela (m):', min_value=0.1, value=2.6, step=0.1)
+        with c5: largura = st.number_input('Largura do Trilho/Varão (m):', min_value=0.0, value=0.0, step=0.1)
+        with c6: altura = st.number_input('Altura da Janela (m):', min_value=0.0, value=0.0, step=0.1)
         
         st.markdown('---')
         st.subheader('🧵 Detalhes dos Tecidos')
@@ -260,14 +260,14 @@ with aba_calculadora:
         ct1, ct2, ct3 = st.columns(3)
         with ct1: cod_tec_frente = st.text_input('Código Tecido Frente:', value='TEC-01')
         with ct2: nome_tec_frente = st.text_input('Nome Tecido Frente:', value='Linho Flame')
-        with ct3: v_tec_frente = st.number_input('Preço/m Frente (R$):', min_value=0.0, value=60.0, step=5.0)
+        with ct3: v_tec_frente = st.number_input('Preço/m Frente (R$):', min_value=0.0, value=0.0, step=5.0)
 
         if tem_forro:
             st.markdown('**Tecido do Forro:**')
             cf1, cf2, cf3 = st.columns(3)
             with cf1: cod_tec_forro = st.text_input('Código Forro:', value='FOR-01')
             with cf2: nome_tec_forro = st.text_input('Nome Forro:', value='Forro Microfibra')
-            with cf3: v_tec_forro = st.number_input('Preço/m Forro (R$):', min_value=0.0, value=35.0, step=5.0)
+            with cf3: v_tec_forro = st.number_input('Preço/m Forro (R$):', min_value=0.0, value=0.0, step=5.0)
         else:
             cod_tec_forro, nome_tec_forro, v_tec_forro = "N/A", "N/A", 0.0
 
@@ -281,10 +281,10 @@ with aba_calculadora:
         with ce2: nome_barra = st.text_input(f'Nome do {tipo_estrutura_txt}:', value=f'{tipo_estrutura_txt} Alumínio Padrão')
         with ce3: 
             if 'Varão' in modelo:
-                v_varao = st.number_input('Preço/m Varão (R$):', min_value=0.0, value=40.0, step=5.0)
+                v_varao = st.number_input('Preço/m Varão (R$):', min_value=0.0, value=0.0, step=5.0)
                 v_trilho = 0.0
             else:
-                v_trilho = st.number_input('Preço/m Trilho (R$):', min_value=0.0, value=35.0, step=5.0)
+                v_trilho = st.number_input('Preço/m Trilho (R$):', min_value=0.0, value=0.0, step=5.0)
                 v_varao = 0.0
 
         st.markdown('**Componentes de Argolas / Ilhós:**')
@@ -292,11 +292,11 @@ with aba_calculadora:
         with c_sub1:
             is_ilhos = (modelo == 'Ilhós (Varão)')
             cod_ilhos = st.text_input('Código do Ilhós:', value='ILH-01', disabled=not is_ilhos)
-            v_ilhos = st.number_input('Valor Unitário Ilhós (R$):', min_value=0.0, value=3.50, step=0.50, disabled=not is_ilhos)
+            v_ilhos = st.number_input('Valor Unitário Ilhós (R$):', min_value=0.0, value=0.0, step=0.50, disabled=not is_ilhos)
         with c_sub2:
             is_argola = ('Argola' in modelo or 'Prega' in modelo)
             cod_argola = st.text_input('Código da Argola:', value='ARG-01', disabled=not is_argola)
-            v_argola_manual = st.number_input('Valor Unitário Argola (R$):', min_value=0.0, value=4.50, step=0.50, disabled=not is_argola)
+            v_argola_manual = st.number_input('Valor Unitário Argola (R$):', min_value=0.0, value=0.0, step=0.50, disabled=not is_argola)
 
         st.markdown('**Suportes e Ponteiras:**')
         is_varao = ('Varão' in modelo)
@@ -304,16 +304,16 @@ with aba_calculadora:
         c_acc1, c_acc2 = st.columns(2)
         with c_acc1:
             cod_suporte = st.text_input('Código do Suporte:', value='SUP-01', disabled=not is_varao)
-            v_suporte = st.number_input('Valor Unitário Suporte (R$):', min_value=0.0, value=12.0, step=1.0, disabled=not is_varao)
+            v_suporte = st.number_input('Valor Unitário Suporte (R$):', min_value=0.0, value=0.0, step=1.0, disabled=not is_varao)
             st.write("") 
             cod_ponteira_m = st.text_input('Código Ponteira (M):', value='PTM-01', disabled=not is_varao)
-            v_ponteira_m = st.number_input('Valor Unitário Ponteira (M) (R$):', min_value=0.0, value=15.0, step=1.0, disabled=not is_varao)
+            v_ponteira_m = st.number_input('Valor Unitário Ponteira (M) (R$):', min_value=0.0, value=0.0, step=1.0, disabled=not is_varao)
         with c_acc2:
             st.write("") 
             st.write("") 
             st.write("")
             cod_ponteira_g = st.text_input('Código Ponteira (G):', value='PTG-01', disabled=not is_varao)
-            v_ponteira_g = st.number_input('Valor Unitário Ponteira (G) (R$):', min_value=0.0, value=25.0, step=1.0, disabled=not is_varao)
+            v_ponteira_g = st.number_input('Valor Unitário Ponteira (G) (R$):', min_value=0.0, value=0.0, step=1.0, disabled=not is_varao)
         st.markdown('---')
         st.subheader('📝 Observações do Pedido')
         obs_pedido = st.text_area('Informações adicionais:', placeholder='Ex: Cliente vai retirar na loja, conferir estampa...', height=80)
