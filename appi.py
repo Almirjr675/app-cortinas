@@ -83,8 +83,8 @@ def gerar_pdf_orcamento(dados_pdf):
     story = []
     
     # 1. CABEÇALHO
-    story.append(Paragraph("<b>MAUÁ TECIDOS</b> by Almir Jr", style_titulo))
-    story.append(Paragraph(f"Orçamento Técnico de Cortinas | Data: {dados_pdf['data']} | Vendedor: {dados_pdf['vendedor']}", style_sub))
+    story.append(Paragraph("<b>Mauá Tecidos</b>", style_titulo))
+    story.append(Paragraph(f"Orçamento de Cortinas | Data: {dados_pdf['data']} | Vendedor: {dados_pdf['vendedor']}", style_sub))
     story.append(Spacer(1, 5))
     
     # 2. DADOS DO CLIENTE
