@@ -3,6 +3,19 @@ import json
 import os
 import math
 import streamlit as st
+from datetime import datetime, timedelta
+import json
+import os
+import math
+import streamlit as st
+
+# 🆕 NOVAS IMPORTAÇÕES PARA O PDF (Adicione aqui)
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+import io
+
 # ==========================================================
 # 🔐 CONFIGURAÇÕES E GERENCIAMENTO DE USUÁRIOS
 # ==========================================================
@@ -45,6 +58,99 @@ def renderizar_tela_login():
             else:
                 st.error('Usuário ou senha incorretos. Tente novamente.')
         st.markdown('</div>', unsafe_allow_html=True)
+        # ... Aqui termina a sua função antiga renderizar_tela_login() ...
+
+# 🆕 COLE A FUNÇÃO GERADORA DE PDF BEM AQUI:
+def gerar_pdf_orcamento(dados_pdf):
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=letter,
+        rightMargin=40, leftMargin=40, topMargin=40, bottomMargin=40,
+        title=f"Orcamento_{dados_pdf['cliente']}"
+    )
+    styles = getSampleStyleSheet()
+    style_titulo = ParagraphStyle('TituloDoc', parent=styles['Heading1'], fontSize=20, textColor=colors.HexColor("#1A365D"), spaceAfter=5)
+    style_sub = ParagraphStyle('SubDoc', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor("#4A5568"), spaceAfter=15)
+    style_secao = ParagraphStyle('SecaoDoc', parent=styles['Heading2'], fontSize=13, textColor=colors.HexColor("#2B6CB0"), spaceBefore=12, spaceAfter=8)
+    style_texto = ParagraphStyle('TextoDoc', parent=styles['Normal'], fontSize=11, textColor=colors.HexColor("#2D3748"), leading=14)
+    style_th = ParagraphStyle('TableHeader', parent=styles['Normal'], fontSize=10, textColor=colors.white, fontName="Helvetica-Bold", alignment=1)
+    style_td = ParagraphStyle('TableCell', parent=styles['Normal'], fontSize=9, textColor=colors.HexColor("#2D3748"), alignment=0)
+    style_td_val = ParagraphStyle('TableCellVal', parent=styles['Normal'], fontSize=9, textColor=colors.HexColor("#2D3748"), alignment=2)
+    
+    # Novo estilo centralizado para o bloco de assinaturas
+    style_assinatura = ParagraphStyle('AssinaDoc', parent=styles['Normal'], fontSize=10, textColor=colors.HexColor("#2D3748"), alignment=1)
+
+    story = []
+    
+    # 1. CABEÇALHO
+    story.append(Paragraph("<b>MAUÁ TECIDOS</b> by Almir Jr", style_titulo))
+    story.append(Paragraph(f"Orçamento Técnico de Cortinas | Data: {dados_pdf['data']} | Vendedor: {dados_pdf['vendedor']}", style_sub))
+    story.append(Spacer(1, 5))
+    
+    # 2. DADOS DO CLIENTE
+    story.append(Paragraph("📋 Identificação e Local de Instalação", style_secao))
+    dados_cliente_html = f"<b>Cliente:</b> {dados_pdf['cliente']}<br/><b>WhatsApp:</b> {dados_pdf['telefone']}<br/><b>CPF:</b> {dados_pdf['cpf']}<br/><b>Endereço:</b> {dados_pdf['endereco']}"
+    story.append(Paragraph(dados_cliente_html, style_texto))
+    
+    # 3. ESPECIFICAÇÕES DO PRODUTO
+    story.append(Paragraph("📐 Especificações da Cortina", style_secao))
+    dados_produto_html = f"<b>Ambiente:</b> {dados_pdf['ambiente']}<br/><b>Dimensões:</b> {dados_pdf['largura']:.2f}m x {dados_pdf['altura']:.2f}m<br/><b>Modelo:</b> {dados_pdf['modelo']} ({dados_pdf['franzimento']}x)<br/><b>Abertura:</b> {dados_pdf['abertura']}"
+    story.append(Paragraph(dados_produto_html, style_texto))
+    
+    # 4. TABELA FINANCEIRA
+    story.append(Paragraph("💰 Resumo Financeiro", style_secao))
+    tabela_data = [
+        [Paragraph("Descrição do Item", style_th), Paragraph("Valor", style_th)],
+        [Paragraph("Confecção de Cortina sob medida (Tecidos, Aviamentos e Instalação)", style_td), Paragraph(f"R$ {dados_pdf['valor_total']:.2f}", style_td_val)],
+        [Paragraph("<b>VALOR TOTAL DO PEDIDO</b>", style_td), Paragraph(f"<b>R$ {dados_pdf['valor_total']:.2f}</b>", style_td_val)]
+    ]
+    t_financeira = Table(tabela_data, colWidths=[380, 120])
+    t_financeira.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (1,0), colors.HexColor("#1A365D")),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 8), ('TOPPADDING', (0,0), (-1,-1), 8),
+        ('GRID', (0,0), (-1,-1), 0.5, colors.HexColor("#E2E8F0")),
+        ('BACKGROUND', (0,-1), (1,-1), colors.HexColor("#F7FAFC")),
+    ]))
+    story.append(t_financeira)
+    
+    # 5. 🆕 FORMAS DE PAGAMENTO (Adicionado aqui)
+    story.append(Paragraph("💳 Formas de Pagamento Aceitas", style_secao))
+    formas_pagamento_html = """
+    • <b>À Vista / PIX:</b> 5% de desconto sobre o valor total do pedido.<br/>
+    • <b>Cartão de Crédito:</b> Em até 6x sem juros.<br/>
+    • <b>Sinal:</b> 50% de entrada no ato do pedido + 50% antes da instalação.
+    """
+    story.append(Paragraph(formas_pagamento_html, style_texto))
+    
+    # 6. TERMOS E CONDIÇÕES
+    story.append(Paragraph("📅 Termos, Condições e Entrega", style_secao))
+    termos_html = f"• <b>Prazo Limite:</b> {dados_pdf['prazo_entrega']} (20 dias úteis).<br/>• <b>Obs:</b> {dados_pdf['observacoes'] if dados_pdf['observacoes'] else 'Nenhuma.'}<br/>• <b>Validade:</b> 15 dias."
+    story.append(Paragraph(termos_html, style_texto))
+    
+    story.append(Spacer(1, 35)) # Dá um espaço confortável antes das assinaturas
+    
+    # 7. 🆕 CAMPO DE ASSINATURAS (Adicionado no rodapé)
+    tabela_assinaturas_data = [
+        [
+            Paragraph("_______________________________________<br/><b>Mauá Tecidos</b><br/>Responsável/Gerente", style_assinatura),
+            Paragraph("_______________________________________<br/><b>Aceite do Cliente</b><br/>De acordo com as especificações", style_assinatura)
+        ]
+    ]
+    t_assinaturas = Table(tabela_assinaturas_data, colWidths=[250, 250])
+    t_assinaturas.setStyle(TableStyle([
+        ('ALIGN', (0,0), (-1,-1), 'CENTER'),
+        ('VALIGN', (0,0), (-1,-1), 'BOTTOM'),
+        ('TOPPADDING', (0,0), (-1,-1), 10),
+    ]))
+    story.append(t_assinaturas)
+    
+    doc.build(story)
+    buffer.seek(0)
+    return buffer
+
+# ----------------------------------------------------------
+# Logo abaixo segue a sua linha antiga: st.set_page_config(...)
+
 # Configuração obrigatória do Streamlit
 st.set_page_config(page_title='Orçamentos Cortinas', page_icon='🪟', layout='wide')
 
@@ -380,7 +486,7 @@ with aba_calculadora:
         
         st.markdown('---')
         
-        if st.button('💾 SALVAR NO HISTÓRICO', type='primary', use_container_width=True):
+        if st.button('💾 SALVAR NO HISTÓRICO', type='primary', use_container_width=True, key="btn_salvar_historico_maua"):
             if not cliente_definitivo:
                 st.error('Insira o nome do cliente para salvar.')
             else:
@@ -404,6 +510,39 @@ with aba_calculadora:
                     st.success(f'Orçamento de {cliente_definitivo} salvo com sucesso na nuvem!')
                 except Exception as e:
                     st.error(f"Erro ao salvar: {e}")
+                # ... Linhas antigas do botão de salvar ...
+            # ... Lógica interna do botão que você já tem ...
+            pass # (não apague o código que está aqui dentro)
+                # ... Mantém todo o dicionário "dados_para_pdf" idêntico ...
+                # ... Mantém todo o dicionário "dados_para_pdf" idêntico ...
+        dados_para_pdf = {
+            "data": datetime.now().strftime('%d/%m/%Y'),
+            "vendedor": vendedor,
+            "cliente": cliente_definitivo if cliente_definitivo else "Cliente Não Informado",
+            "cpf": cpf_cliente, "telefone": telefone_cliente, "endereco": endereco_cliente,
+            "ambiente": ambiente if ambiente else "Geral", "largura": largura, "altura": altura,
+            "modelo": modelo, "franzimento": franzimento, "regiao": regiao,
+            "valor_total": valor_final_cortina, "prazo_entrega": data_limite_entrega,
+            "abertura": abertura, "observacoes": obs_pedido
+        }
+        
+        pdf_gerado = gerar_pdf_orcamento(dados_para_pdf)
+        
+        st.write("") # dá um espacinho visual
+        
+        # 🌟 CORREÇÃO: Nome limpo para a chave dinâmica
+        nome_limpo_cliente = dados_para_pdf['cliente'].lower().replace(' ', '_')
+        
+        # O download_button agora possui uma chave dinâmica e exclusiva baseada no cliente atual
+        st.download_button(
+            label="📥 GERAR ORÇAMENTO EM PDF",
+            data=pdf_gerado,
+            file_name=f"Orcamento_Maua_{nome_limpo_cliente}.pdf",
+            mime="application/pdf",
+            use_container_width=True,
+            key=f"btn_pdf_{nome_limpo_cliente}"  # <--- Garante ID único em qualquer aba ou recarregamento
+        )
+
 
 # 5. HISTÓRICO LOCAL EM NUVEM
 with aba_historico:
